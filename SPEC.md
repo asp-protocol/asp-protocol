@@ -5,224 +5,248 @@ Version 0.1 (Draft)
 
 ## 1. Introduction
 
-AI agents frequently repeat work that has already been completed by other agents.
+AI agents frequently perform large amounts of overlapping computation.
 
-Tasks such as code audits, research analysis, reasoning, data transformation, and structured generation are recomputed independently across agents, resulting in duplicated computation, increased cost, and wasted time.
+Although human requests appear diverse, the internal work performed by agents—such as parsing inputs, analyzing structures, evaluating conditions, and producing intermediate conclusions—is often highly repetitive across tasks, users, and systems.
 
-ASP (Agent Sharing Protocol) defines a minimal, open protocol that allows AI agents to describe, publish, and reuse completed work results, enabling other agents to verify and reuse those results without necessarily recomputing the entire task.
+Today, these completed work results are rarely reused. Each agent independently recomputes similar analyses, resulting in unnecessary cost, latency, and energy consumption.
 
-ASP is not a platform, not a marketplace, and not a service.
+ASP (Agent Sharing Protocol) defines a minimal, open standard that allows AI agents to describe, publish, discover, verify, and reuse completed work results produced by other agents—without requiring a central platform, registration, or trusted authority.
 
-ASP is a protocol for agent-to-agent sharing of completed work results.
+ASP focuses on sharing what has already been computed, not how agents perform tasks.
 
----
-
-## 2. Scope and Non-Goals
-
-### 2.1 In Scope
-
-ASP defines:
-
-- A standard way to describe completed work results
-- A minimal metadata format for shared results
-- Common semantics for verification and reuse
-
-### 2.2 Explicit Non-Goals
-
-ASP does not define:
-
-- Task execution or scheduling
-- Agent coordination or orchestration
-- Skill, capability, or tool sharing
-- Agent identity, reputation, or trust systems
-- Artifact discovery, indexing, or ranking mechanisms
-- Storage infrastructure or hosting requirements
-- Monetization or access control mechanisms
-
-ASP is a description protocol, not a workflow engine.
+ASP is not a product.
+ASP is not a marketplace.
+ASP is not a service.
+ASP is a protocol.
 
 ---
 
-## 3. Core Concepts
+## 2. Core Concept
 
-### 3.1 Artifact
+### 2.1 Artifacts, Not Abilities
 
-An artifact is a completed work result produced by an agent after performing a specific task.
+In ASP, agents do NOT share:
+- Skills
+- Prompts
+- Workflows
+- Behaviors
+- Execution logic
 
-Examples include, but are not limited to:
+Agents share artifacts.
 
-- Smart contract audit results
-- Code analysis reports
-- Research summaries
-- Data transformation outputs
-- Logical reasoning results
-- Structured or machine-readable outputs
+An artifact is a completed work result produced by an agent after performing a specific computational task or subtask.
 
-Artifacts represent outcomes, not abilities, prompts, or execution processes.
-
-### 3.2 Result-Oriented Sharing
-
-In ASP:
-
-- Agents do not share skills, models, prompts, or tools
-- Agents share completed outputs
-- Reuse is optional and always subject to verification by the consuming agent
+Artifacts represent outputs of computation, not capabilities of agents.
 
 ---
 
-## 4. Design Principles
+### 2.2 Scope of Shared Work
+
+ASP is designed primarily for sharing neutral, reusable, and verifiable work results, including:
+
+- Structural analysis outputs (for example: abstract syntax trees, dependency graphs)
+- Deterministic transformations
+- Logical or mathematical conclusions
+- Intermediate analysis results
+- Subtask-level reasoning outputs
+- Structured data extraction
+- Safety, validity, or consistency assessments
+
+Artifacts do not need to be complete, user-facing deliverables.
+Partial and intermediate results are valid and encouraged.
+
+---
+
+## 3. Design Principles
 
 ASP follows these principles:
 
 1. Result over ability  
-   Share outcomes, not skills or execution logic.
+   Share completed work results, not agent capabilities.
 
 2. Verification over trust  
-   Artifacts must be independently verifiable by consuming agents.
+   Artifacts must be independently verifiable.
 
-3. No central authority  
-   No registry, coordinator, or required service exists.
+3. Decentralization by default  
+   No central registry, server, or authority is required.
 
 4. Minimal structure  
-   Use a simple, extensible JSON-based metadata format.
+   The protocol defines only what is necessary for reuse.
 
 5. Permissionless adoption  
-   Any agent or system may implement ASP without registration.
+   Any agent may publish or consume ASP artifacts.
 
-6. Protocol, not workflow  
-   ASP defines data formats and semantics, not agent behavior or execution flow.
+6. Content neutrality  
+   ASP does not judge usefulness, quality, or ownership.
 
 ---
 
-## 5. Artifact Metadata Structure
+## 4. Artifact Reuse Model
 
-ASP standardizes artifact metadata, not artifact payloads.
+### 4.1 Levels of Reusability
 
-The artifact payload itself (for example: a report, dataset, or document) is external to ASP and referenced by location.
+Artifacts may exist at different levels, including:
 
-### 5.1 Artifact Metadata Format
+- Structural artifacts  
+  Deterministic representations derived from input.
 
-Example artifact metadata structure:
+- Analytical artifacts  
+  Objective conclusions or evaluations.
+
+- Intermediate artifacts  
+  Results of subtasks or partial reasoning.
+
+ASP prioritizes machine-level reusable work rather than preference-driven final outputs.
+
+---
+
+### 4.2 Partial Reuse
+
+Artifacts do not need to match future tasks exactly.
+
+Agents may:
+- Reuse parts of an artifact
+- Combine multiple artifacts
+- Use artifacts as verified inputs to new computation
+
+ASP reduces redundant computation rather than replacing task execution entirely.
+
+---
+
+## 5. Artifact Description Format
+
+An ASP artifact is described using the following JSON structure:
 
     {
-      "artifact_id": "string",
+      "artifact_id": "sha256(canonical_input_hash + canonical_output_hash)",
       "task_type": "string",
-      "input_hash": "string",
-      "output_hash": "string",
+      "input_hash": "sha256(original_input)",
+      "output_hash": "sha256(result_output)",
+      "created_by": "agent_identifier",
       "created_at": 1735689600,
-      "location": "string",
-      "created_by": "string (optional)",
+      "artifact_scope": "structural | analytical | intermediate | other",
+      "location": "https://... or ipfs://...",
       "verification": {
-        "method": "recompute | signature | zk-proof | other (optional)",
-        "details": "object (optional)"
+        "method": "recompute | signature | proof",
+        "details": "optional"
       }
     }
 
-### 5.2 Field Descriptions
-
-- artifact_id  
-  A deterministic identifier for the artifact.  
-  The exact method for generating this identifier is implementation-defined in v0.1.
-
-- task_type  
-  A short string describing the type of task performed  
-  (for example: erc20_audit, research_summary, csv_transform).
-
-- input_hash  
-  A cryptographic hash of the task input.  
-  The specific hash algorithm is implementation-defined but must be collision-resistant.
-
-- output_hash  
-  A cryptographic hash of the artifact payload.
-
-- created_at  
-  Unix timestamp indicating when the artifact was produced.
-
-- location  
-  A URI pointing to the artifact payload.  
-  The payload itself is NOT part of the ASP message.
-
-- created_by (optional)  
-  An opaque identifier provided by the producing agent.  
-  ASP does not define agent identity or authentication.
-
-- verification (optional)  
-  Metadata describing how the artifact may be verified.
+All fields are descriptive.
+ASP does not enforce how artifacts are generated, stored, or discovered.
 
 ---
 
-## 6. Verification
+## 6. Agent Interaction Flow
 
-ASP does not require trust between agents.
+### 6.1 Before Computation
 
-Verification is performed at the discretion of the consuming agent and may include:
+An agent may:
+1. Compute a canonical hash of its task input or subtask input.
+2. Search for existing ASP artifacts with matching or relevant input hashes and task types.
 
-- Recomputing the task using the same input
-- Verifying digital signatures
-- Validating cryptographic proofs
-- Applying domain-specific validation logic
-
-ASP does not guarantee correctness, completeness, or quality of artifacts.
+Discovery mechanisms are implementation-specific and outside the scope of this specification.
 
 ---
 
-## 7. Discovery and Reuse
+### 6.2 Artifact Reuse
 
-ASP does not define how artifacts are discovered.
+If a relevant artifact is found, the agent may:
+- Retrieve the artifact
+- Verify its integrity and validity
+- Reuse part or all of the result
+- Skip or reduce recomputation
 
-Agents MAY locate artifacts using any mechanism outside the scope of ASP, including:
-
-- Search engines
-- Repositories
-- Peer-to-peer networks
-- Local caches
-- Private or public indexes
-
-If an artifact is reused, the consuming agent is responsible for verification.
+Verification is optional but strongly recommended.
 
 ---
 
-## 8. Storage
+### 6.3 Artifact Publication
 
-ASP does not define storage requirements.
+If no suitable artifact exists, the agent may:
+- Perform the computation
+- Produce a new artifact
+- Publish its description for future agents
 
-Artifacts and metadata may be stored on:
+Publication does not imply ownership, endorsement, or permanence.
 
-- Git repositories
-- IPFS or similar content-addressed systems
-- Cloud object storage
+---
+
+## 7. Verification
+
+ASP does not assume trust between agents.
+
+Artifacts may be verified through:
+- Full or partial recomputation
+- Cryptographic signatures
+- Formal or probabilistic proofs
+
+Verification methods are optional and extensible.
+
+---
+
+## 8. Storage and Discovery
+
+ASP does not define storage, hosting, or discovery mechanisms.
+
+Artifacts may be stored on:
+- Public repositories
+- Content-addressed networks
+- Cloud storage
 - Local or private servers
-- Any publicly or privately accessible location
 
-Storage choice does not affect protocol compliance.
-
----
-
-## 9. Example Use Case
-
-Agent A audits an ERC20 smart contract and produces an audit report.
-
-Agent A publishes an ASP artifact describing the completed audit and provides a location to the report.
-
-Later, Agent B receives a request to audit the same contract.
-
-Agent B MAY locate the existing artifact, verify its validity, and reuse the result instead of performing a full recomputation.
+ASP standardizes description, not distribution.
 
 ---
 
-## 10. Versioning and Evolution
+## 9. What ASP Is Not
 
-ASP uses semantic versioning:
+ASP is NOT:
+- A skill-sharing network
+- An agent marketplace
+- A workflow orchestration framework
+- A centralized registry
+- A blockchain protocol
+- A monetization system
+- A content trading platform
 
-- v0.x — Experimental drafts, subject to change
-- v1.0 — Stable core protocol
-
-Backward compatibility is not guaranteed during v0.x.
+ASP does not coordinate agents.
+ASP does not execute tasks.
+ASP does not enforce policies.
 
 ---
 
-## 11. License
+## 10. Example Scenario
+
+Agent A analyzes a smart contract and produces:
+- A control flow graph
+- A vulnerability assessment
+- Several intermediate reasoning artifacts
+
+Agent B later receives a related task.
+
+Instead of recomputing all analysis steps, Agent B:
+- Discovers relevant artifacts
+- Verifies them
+- Reuses verified components
+- Performs only task-specific computation
+
+Computation is reduced.
+Verification replaces repetition.
+
+---
+
+## 11. Vision
+
+ASP enables a future where AI agents build upon each other's completed work, forming a decentralized layer of reusable machine intelligence.
+
+By reducing redundant computation, ASP improves efficiency, scalability, and sustainability across the AI ecosystem—without introducing centralized control or trust dependencies.
+
+---
+
+## 12. License
 
 ASP is released under the MIT License.
 
-Any individual, organization, or system may implement the protocol freely.
+Any individual or organization may implement, extend, or adopt the protocol freely.
