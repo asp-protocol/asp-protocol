@@ -1,179 +1,173 @@
 # ASP — Agent Sharing Protocol
 
-ASP is a minimal, open protocol that allows AI agents to share completed work results so other agents can verify and reuse them instead of recomputing the same work.
+**ASP is an open, minimal protocol that allows AI agents to share completed work results as reusable artifacts.**
 
-ASP enables agents to share what has already been done, not how to do it.
+AI agents should not redo work that another agent has already completed.
+
+Instead of sharing abilities or skills, agents using ASP share **verifiable outcomes** — audits, analyses, research, reasoning results, and structured computation outputs — so other agents can reuse them without recomputing the original task.
+
+ASP is a protocol, not a platform.
 
 ---
 
 ## Why ASP Exists
 
-Human requests to AI systems are often diverse and personalized.
+Today, AI agents repeatedly perform the same kinds of work:
 
-However, beneath these differences, AI agents repeatedly perform highly similar internal computation:
-- Parsing the same structures
-- Analyzing the same code or data
-- Evaluating the same conditions
-- Producing similar intermediate conclusions
+- Code audits on identical contracts
+- Analysis of the same papers, datasets, or repositories
+- Reasoning over identical problem statements
+- Parsing and transforming the same structured inputs
 
-Today, this work is almost always recomputed from scratch.
+Even when user prompts differ slightly, **large portions of the underlying work are identical or overlapping**.
 
-ASP exists to reduce redundant machine computation by enabling agents to describe, publish, discover, verify, and reuse completed work results produced by other agents.
+This results in massive duplicated computation across agents, systems, and organizations.
 
-ASP focuses on machine-level efficiency, not human-level content reuse.
+ASP defines a shared language that allows agents to say:
 
----
-
-## Core Idea
-
-ASP does NOT enable agents to share:
-- Skills
-- Prompts
-- Workflows
-- Behaviors
-- Execution logic
-
-ASP enables agents to share **artifacts**.
-
-An artifact is a completed work result produced by an agent after performing a specific task or subtask.
-
-Artifacts represent outputs of computation, not capabilities of agents.
+> “This work has already been done.  
+> Here is the result.  
+> You can verify it and reuse it.”
 
 ---
 
-## What Kind of Work Is Shared
+## What ASP Is (and Is Not)
 
-ASP is designed primarily for sharing neutral, reusable, and verifiable work results, such as:
+### ASP **is**
+- An open protocol
+- Permissionless and decentralized
+- Focused on *results*, not capabilities
+- Compatible with any agent architecture
+- Storage-agnostic and infrastructure-neutral
 
-- Structural analysis outputs (for example: abstract syntax trees, dependency graphs)
-- Deterministic transformations
-- Logical or mathematical conclusions
-- Intermediate analysis results
-- Subtask-level reasoning outputs
-- Structured data extraction
-- Safety, validity, or consistency assessments
-
-Artifacts do not need to be complete, user-facing deliverables.
-
-Partial and intermediate results are valid and encouraged.
-
-ASP is not focused on sharing preference-driven or personalized final outputs.
-
----
-
-## How ASP Is Used
-
-A typical agent workflow with ASP looks like this:
-
-1. Before performing a task, an agent computes a canonical hash of its task input or subtask input.
-2. The agent searches for existing ASP artifacts that match or relate to that input.
-3. If a relevant artifact is found, the agent may retrieve and verify it.
-4. Verified artifacts may be reused fully or partially to reduce recomputation.
-5. If no suitable artifact exists, the agent performs the computation and publishes a new artifact for future agents.
-
-ASP replaces repeated computation with verification and reuse.
-
----
-
-## Verification, Not Trust
-
-ASP does not assume trust between agents.
-
-Artifacts may be verified through:
-- Full or partial recomputation
-- Cryptographic signatures
-- Formal or probabilistic proofs
-
-Verification is optional but strongly recommended.
-
-ASP does not define which verification method must be used.
-
----
-
-## Decentralization by Design
-
-ASP does not require:
-- A central server
-- A global registry
-- An approval process
-- An identity system
-- A hosting platform
-
-Artifacts may be stored anywhere that is publicly accessible, including:
-- Public repositories
-- Content-addressed networks
-- Cloud storage
-- Local or private servers
-
-ASP standardizes artifact description, not storage or discovery.
-
----
-
-## What ASP Is Not
-
-ASP is NOT:
+### ASP **is not**
 - A skill-sharing network
 - An agent marketplace
-- A workflow orchestration framework
+- A hosting platform
 - A centralized registry
-- A blockchain protocol
 - A monetization system
-- A content trading platform
+- A blockchain or token protocol
 
-ASP does not coordinate agents.
-ASP does not execute tasks.
-ASP does not enforce policies.
+ASP does not coordinate agents.  
+ASP does not manage identities.  
+ASP does not enforce economics.
 
----
-
-## Example Scenario
-
-Agent A analyzes a smart contract and produces several artifacts:
-- A control flow graph
-- A vulnerability assessment
-- Intermediate reasoning results
-
-Agent B later receives a related task.
-
-Instead of recomputing all analysis steps, Agent B:
-- Discovers relevant artifacts
-- Verifies them
-- Reuses verified components
-- Performs only task-specific computation
-
-Computation is reduced.
-Verification replaces repetition.
+ASP only standardizes how **completed work results** are described, published, discovered, and verified.
 
 ---
 
-## Specification
+## Core Concept: Artifacts
 
-The formal protocol definition is available in:
+In ASP, agents share **artifacts**.
 
-SPEC.md
+An artifact is a completed, self-contained work result produced by an agent after performing a task, such as:
 
-The specification defines:
-- Artifact structure
-- Reuse model
-- Verification concepts
-- Protocol boundaries
+- A smart contract audit report
+- A static analysis result
+- A research summary or literature review
+- A data transformation output
+- A reasoning trace or decision justification
+- A structured JSON or CSV output
+
+Artifacts are **outputs**, not behaviors.
+
+ASP intentionally avoids sharing:
+- Prompts
+- Agent logic
+- Internal chains of thought
+- Skills or execution strategies
 
 ---
 
-## Vision
+## How ASP Works (30 seconds)
 
-ASP enables a future where AI agents build on top of each other's completed work, forming a decentralized layer of reusable machine intelligence.
+1. An agent completes a task and produces a result
+2. The agent publishes the result as an ASP artifact with a standardized descriptor
+3. Other agents discover the artifact, verify it, and reuse the result instead of recomputing
 
-By reducing redundant computation, ASP improves efficiency, scalability, and sustainability across the AI ecosystem—without introducing centralized control or trust dependencies.
+Computation happens once.  
+Reuse happens many times.
+
+---
+
+## Verification Over Trust
+
+ASP does not require trust between agents.
+
+Artifacts can be verified through:
+- Recomputing the task
+- Matching input/output hashes
+- Digital signatures
+- Cryptographic proofs (optional)
+
+Each agent decides **its own verification threshold**.
+
+ASP only defines the metadata needed to make verification possible.
+
+---
+
+## Storage and Discovery
+
+ASP does not mandate where artifacts live.
+
+Artifacts may be stored on:
+- GitHub repositories
+- IPFS or other content-addressed systems
+- Cloud storage
+- Public servers
+- Local or private infrastructure
+
+ASP standardizes **how artifacts are described**, not **where they are stored**.
+
+Discovery mechanisms are intentionally left open to allow experimentation.
 
 ---
 
 ## Status
 
-ASP is an early-stage, open protocol.
+**Status: Early Draft (v0.1)**
 
-The current version is a draft.
-Feedback, discussion, and experimentation are welcome.
+ASP is an early-stage protocol proposal.
+
+The specification is stable enough for experimentation but not finalized.
+
+Breaking changes may occur as the protocol evolves.
+
+---
+
+## Who Should Care About ASP
+
+ASP is relevant for:
+
+- AI agent developers
+- Autonomous agent frameworks
+- Research automation systems
+- Code analysis and auditing agents
+- Organizations operating large fleets of agents
+- Anyone interested in reducing redundant AI computation
+
+You do **not** need to adopt ASP fully to experiment with it.
+
+Partial, informal, or experimental implementations are encouraged.
+
+---
+
+## Getting Started
+
+- Read the full protocol specification: **[SPEC.md](./SPEC.md)**
+- Experiment with producing ASP-compatible artifacts
+- Open issues or discussions to propose improvements
+- Share feedback, critiques, or alternative designs
+
+ASP grows through usage, not authority.
+
+---
+
+## Vision
+
+ASP enables a future where AI agents build on top of each other’s completed work instead of repeatedly starting from zero.
+
+Over time, this forms a distributed, verifiable layer of reusable intelligence across the AI ecosystem.
 
 ---
 
@@ -181,4 +175,4 @@ Feedback, discussion, and experimentation are welcome.
 
 ASP is released under the MIT License.
 
-Any individual or organization may implement, extend, or adopt the protocol freely.
+Anyone may implement, extend, or fork the protocol freely.
